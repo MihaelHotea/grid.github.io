@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Pixel Art Grid</title>
+    <style>
+        #pixelArtGrid table {
+            border-collapse: collapse;
+            width: 100px; /* Setează lățimea tabelului la 100% */
+        }
+        #pixelArtGrid td {
+            border: 1px solid #A7A7A7;
+            cursor: pointer;
+        }
+
+        .colorPalette {
+            margin-bottom: 10px;
+        }
+        .colorPalette span {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #A7A7A7;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        /* Stiluri pentru butoane */
+        .button {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+   <div class="colorPalette">
+        <input type="color" id="colorPicker" value="#000000">
+        <button id="setColor" class="button">Selectează culoarea</button>
+        <button id="toggleMode" class="button">Rezervare Celulă</button>
+    </div>
+
+    <div id="pixelArtGrid">
+        <table>
+            <!-- Aici este codul tabelului -->
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var allowColoring = true; // Variabilă pentru a controla dacă se permite colorarea sau nu
+
+            function createGrid(rows, cols) {
+                var grid = document.getElementById('pixelArtGrid');
+                var table = document.createElement('table');
+
+                for (var i = 0; i < rows; i++) {
+                    var tr = document.createElement('tr');
+                    for (var j = 0; j < cols; j++) {
+                        var td = document.createElement('td');
+                        td.addEventListener('click', function() {
+                            if (allowColoring) { // Verificăm dacă se permite colorarea
+                                // Șterge culoarea de pe toate celelalte celule
+                                var allCells = document.querySelectorAll('#pixelArtGrid td');
+                                allCells.forEach(function(cell) {
+                                    cell.style.backgroundColor = '';
+                                });
+                                // Setează culoarea pentru celula curentă
+                                this.style.backgroundColor = selectedColor;
+                            }
+                        });
+                        // Refacere stare salvată din localStorage
+                        var savedColor = localStorage.getItem('cell-' + i + '-' + j);
+                        if (savedColor === selectedColor) {
+                            td.style.backgroundColor = selectedColor;
+                        }
+                        tr.appendChild(td);
+                    }
+                    table.appendChild(tr);
+                }
+                grid.appendChild(table);
+            }
+
+            // Selectare implicită a primei culori din paletă
+            var selectedColor = '#000000'; // Negru
+
+            // Actualizare culori la clic pe paletă
+            var setColorButton = document.getElementById('setColor');
+            var colorPicker = document.getElementById('colorPicker');
+            setColorButton.addEventListener('click', function() {
+                selectedColor = colorPicker.value;
+            });
+
+            // Funcționalitate pentru butonul de comutare a modului
+            var toggleModeButton = document.getElementById('toggleMode');
+            toggleModeButton.addEventListener('click', function() {
+                allowColoring = !allowColoring; // Invertește valoarea variabilei
+                // Actualizare nume buton în funcție de starea colorării
+                toggleModeButton.textContent = allowColoring ? 'Rezervare Celulă' : 'Eliberare Celulă';
+            });
+
+            createGrid(40, 25);
+        });
+    </script>
+</body>
+</html>
